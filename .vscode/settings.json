@@ -1,0 +1,13 @@
+{
+  "python.defaultInterpreterPath": "C:/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe",
+  "python.terminal.activateEnvironment": false,
+  "git.path": "C:/Users/Administrator/Documents/Codex/2026-10-19/f/tools/Git/cmd/git.exe",
+  "files.encoding": "utf8",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.env.windows": {
+    "PYTHONUTF8": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_CONFIG_GLOBAL": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\f\\tools\\gitconfig",
+    "PATH": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\f\\tools\\bin;C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\f\\tools\\Git\\cmd;C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314;C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python314\\Scripts;${env:PATH}"
+  }
+}
