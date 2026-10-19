@@ -3,3 +3,5 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+day02/tasks.json
+day02/test_tasks.json
