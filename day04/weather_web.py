@@ -100,6 +100,6 @@ if rows:
         rows,
         columns=["ID", "城市", "温度(°C)", "风速(km/h)", "观测时间", "抓取时间"]
     )
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
 else:
     st.info("还没有记录，点击上面的按钮获取一次。")
