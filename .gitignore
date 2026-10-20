@@ -5,3 +5,4 @@ venv/
 .DS_Store
 day02/tasks.json
 day02/test_tasks.json
+day03/*.db
