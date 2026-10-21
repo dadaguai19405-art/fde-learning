@@ -8,3 +8,4 @@ day02/test_tasks.json
 day03/*.db
 day04/*.db
 day05/*.db
+.streamlit/secrets.toml
