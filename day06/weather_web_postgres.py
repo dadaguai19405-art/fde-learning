@@ -41,16 +41,7 @@ def fetch_weather(city):
     )
 
 
-query_db("""
-CREATE TABLE IF NOT EXISTS weather (
-    id BIGSERIAL PRIMARY KEY,
-    city TEXT NOT NULL,
-    temperature DOUBLE PRECISION NOT NULL,
-    wind_speed DOUBLE PRECISION NOT NULL,
-    observed_at TEXT NOT NULL,
-    fetched_at TEXT NOT NULL
-)
-""")
+# weather 表由数据库管理员一次性创建，应用只负责读写。
 
 st.set_page_config(page_title="城市天气 · Postgres", page_icon="🌤️")
 st.title("城市天气")
