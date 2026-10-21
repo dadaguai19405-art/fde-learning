@@ -1,9 +1,17 @@
+import sys
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 import psycopg
 import requests
 import streamlit as st
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from day07.weather_advice import generate_advice
 
 DATABASE_URL = st.secrets["postgres"]["url"]
 API_URL = "https://api.open-meteo.com/v1/forecast"
@@ -75,15 +83,26 @@ SELECT temperature, wind_speed, observed_at
 FROM weather
 WHERE city = %s
 ORDER BY id DESC
-LIMIT 1
+LIMIT 2
 """, (city,))
 
 if latest:
     temperature, wind_speed, observed_at = latest[0]
+    previous_temperature = (
+        latest[1][0] if len(latest) > 1 else None
+    )
+
     col1, col2 = st.columns(2)
     col1.metric(f"{city}温度", f"{temperature} °C")
     col2.metric("风速", f"{wind_speed} km/h")
     st.caption(f"观测时间：{observed_at}")
+
+    st.subheader("出行建议")
+    st.info(generate_advice(
+        temperature,
+        wind_speed,
+        previous_temperature,
+    ))
 
 st.subheader(f"{city}最近记录")
 
