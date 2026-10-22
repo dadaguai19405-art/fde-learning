@@ -1,5 +1,7 @@
 # FDE 学习项目：城市天气数据应用
 
+![tests](https://github.com/dadaguai19405-art/fde-learning/actions/workflows/tests.yml/badge.svg)
+
 这是一个从零开始学习 Forward Deployed Engineer（FDE）的实践项目，覆盖 Python 基础、数据处理、SQLite、外部 API、Streamlit 网页和云端部署。
 
 ## 在线演示
