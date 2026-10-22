@@ -15,6 +15,12 @@ SYSTEM_PROMPT = """
 3. 温度变化达到 2°C 时，明确说明升温或降温；
 4. 只输出 JSON，不要输出 Markdown 或额外解释。
 
+风险等级规则：
+- 低：温度 10–30°C，风速小于 20 km/h，温度变化小于 2°C；
+- 中：温度 0–9°C 或 31–35°C，风速 20–29 km/h，或温度变化 2–4.9°C；
+- 高：温度低于 0°C 或高于 35°C，风速大于等于 30 km/h，或温度变化大于等于 5°C。
+多个条件同时满足时，取最高风险。
+
 JSON 格式：
 {"advice": "建议文字", "risk": "低|中|高"}
 """.strip()
@@ -48,20 +54,15 @@ def mock_llm(
 ):
     if temperature >= 30:
         advice = f"{city}天气炎热，穿轻薄衣物，注意补水和防晒。"
-        risk = "中"
     elif temperature >= 20:
         advice = f"{city}温度舒适，适合正常出行。"
-        risk = "低"
     elif temperature >= 10:
         advice = f"{city}天气偏凉，建议加一件外套。"
-        risk = "低"
     else:
         advice = f"{city}天气寒冷，注意保暖。"
-        risk = "中"
 
     if wind_speed >= 20:
         advice += " 风速较大，注意防风。"
-        risk = "高"
 
     if previous_temperature is not None:
         change = temperature - previous_temperature
@@ -69,6 +70,20 @@ def mock_llm(
             advice += f" 比上次升温 {change:.1f}°C。"
         elif change <= -2:
             advice += f" 比上次降温 {abs(change):.1f}°C。"
+
+    risk = "低"
+
+    if temperature < 0 or temperature > 35 or wind_speed >= 30:
+        risk = "高"
+    elif temperature < 10 or temperature > 30 or wind_speed >= 20:
+        risk = "中"
+
+    if previous_temperature is not None:
+        change = abs(temperature - previous_temperature)
+        if change >= 5:
+            risk = "高"
+        elif change >= 2 and risk == "低":
+            risk = "中"
 
     return {"advice": advice, "risk": risk}
 
