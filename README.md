@@ -26,6 +26,20 @@
 - Git / GitHub
 - Streamlit Community Cloud
 
+## 质量检查
+
+- pytest：34 个测试
+- 覆盖率：84.62%，最低门槛 70%
+- ruff：代码检查通过
+- GitHub Actions：每次 push 自动运行 lint 和测试
+
+本地运行：
+
+```powershell
+ruff check .
+python -m pytest -q
+```
+
 ## 数据链路
 
 ```text

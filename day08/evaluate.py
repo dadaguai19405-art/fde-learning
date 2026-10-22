@@ -3,7 +3,6 @@ import time
 from eval_cases import CASES
 from llm_advice import generate_advice, load_config
 
-
 api_config = load_config()
 mode = "真实模型" if api_config else "模拟模型"
 passed = 0

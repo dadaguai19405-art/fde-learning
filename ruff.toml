@@ -1,0 +1,9 @@
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = ["E", "F", "I"]
+ignore = ["E402", "E501"]
+
+[lint.isort]
+known-first-party = ["day07", "day08", "day09"]

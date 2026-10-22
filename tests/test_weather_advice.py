@@ -25,3 +25,15 @@ def test_comfortable_advice():
     advice = generate_advice(24, 5)
 
     assert "舒适" in advice
+
+
+def test_moderate_wind_advice():
+    advice = generate_advice(24, 15)
+
+    assert "骑行" in advice
+
+
+def test_low_temperature_advice():
+    advice = generate_advice(5, 5)
+
+    assert "寒冷" in advice
