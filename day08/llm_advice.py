@@ -177,6 +177,24 @@ def load_config():
     return load_config_from_env() or load_config_from_secrets_file()
 
 
+def call_chat(messages, api_config, temperature=0.2):
+    response = requests.post(
+        f"{api_config['base_url'].rstrip('/')}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_config['api_key']}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": api_config["model"],
+            "messages": messages,
+            "temperature": temperature,
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
+
+
 def call_llm(
     city,
     temperature,
