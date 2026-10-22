@@ -24,7 +24,16 @@ JSON 格式：
 
 
 def build_query(question, weather_context):
-    return f"{question} {weather_context}"
+    weather_hints = [
+        "天气", "温度", "气温", "冷", "热", "风", "雨", "雪",
+        "穿", "跑步", "运动", "户外", "骑行", "散步",
+        "空气", "防晒", "补水", "中暑", "保暖", "羽绒服",
+    ]
+
+    if any(hint in question for hint in weather_hints):
+        return f"{question} {weather_context}"
+
+    return question
 
 
 def build_messages(question, weather_context, documents):
@@ -92,6 +101,7 @@ def answer_question(question, weather_context, api_config=None):
             "answer": "根据现有资料无法判断。",
             "citations": [],
             "sources": [],
+            "retrieved": [],
         }
 
     if api_config is None:
@@ -99,6 +109,7 @@ def answer_question(question, weather_context, api_config=None):
             "answer": documents[0]["content"],
             "citations": ["1"],
             "sources": documents[:1],
+            "retrieved": documents,
         }
 
     messages = build_messages(question, weather_context, documents)
@@ -124,4 +135,5 @@ def answer_question(question, weather_context, api_config=None):
         "answer": parsed["answer"],
         "citations": citations,
         "sources": sources,
+        "retrieved": documents,
     }
