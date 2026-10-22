@@ -11,10 +11,29 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from day07.weather_advice import generate_advice
+from day08.llm_advice import generate_advice
 
 DATABASE_URL = st.secrets["postgres"]["url"]
 API_URL = "https://api.open-meteo.com/v1/forecast"
+
+
+def load_llm_config():
+    try:
+        llm = st.secrets["llm"]
+    except (KeyError, FileNotFoundError):
+        return None
+
+    try:
+        return {
+            "api_key": llm["api_key"],
+            "base_url": llm["base_url"],
+            "model": llm["model"],
+        }
+    except KeyError:
+        return None
+
+
+LLM_CONFIG = load_llm_config()
 
 CITIES = {
     "上海": {"latitude": 31.2304, "longitude": 121.4737},
@@ -98,11 +117,67 @@ if latest:
     st.caption(f"观测时间：{observed_at}")
 
     st.subheader("出行建议")
-    st.info(generate_advice(
+
+    if "advice_cache" not in st.session_state:
+        st.session_state.advice_cache = {}
+
+    advice_key = (
+        city,
+        observed_at,
         temperature,
         wind_speed,
         previous_temperature,
-    ))
+    )
+
+    if LLM_CONFIG:
+        st.caption(f"建议模型：{LLM_CONFIG['model']}")
+    else:
+        st.caption("建议模型：规则模式（未配置 [llm]）")
+
+    if st.button("生成 AI 出行建议", type="secondary"):
+        with st.spinner("正在生成建议..."):
+            try:
+                result = generate_advice(
+                    city,
+                    temperature,
+                    wind_speed,
+                    previous_temperature,
+                    api_config=LLM_CONFIG,
+                )
+                mode = (
+                    f"真实模型：{LLM_CONFIG['model']}"
+                    if LLM_CONFIG
+                    else "规则模式"
+                )
+            except Exception as error:
+                result = generate_advice(
+                    city,
+                    temperature,
+                    wind_speed,
+                    previous_temperature,
+                    api_config=None,
+                )
+                mode = "规则回退"
+                st.warning("模型调用失败，已回退到规则建议。")
+                with st.expander("查看错误详情"):
+                    st.code(str(error))
+
+        st.session_state.advice_cache[advice_key] = {
+            "result": result,
+            "mode": mode,
+        }
+
+    cached_advice = st.session_state.advice_cache.get(advice_key)
+
+    if cached_advice:
+        result = cached_advice["result"]
+        st.info(result["advice"])
+        st.caption(
+            f"建议来源：{cached_advice['mode']} · "
+            f"风险等级：{result['risk']}"
+        )
+    else:
+        st.caption("点击上面的按钮生成出行建议，避免每次刷新都调用模型。")
 
 st.subheader(f"{city}最近记录")
 
