@@ -1,0 +1,42 @@
+CASES = [
+    {
+        "name": "炎热天气",
+        "city": "上海",
+        "temperature": 33,
+        "wind_speed": 8,
+        "previous_temperature": 30,
+        "must_include": ["补水", "升温"],
+    },
+    {
+        "name": "寒冷天气",
+        "city": "北京",
+        "temperature": 2,
+        "wind_speed": 10,
+        "previous_temperature": 5,
+        "must_include": ["保暖", "降温"],
+    },
+    {
+        "name": "大风天气",
+        "city": "深圳",
+        "temperature": 25,
+        "wind_speed": 22,
+        "previous_temperature": 25,
+        "must_include": ["防风"],
+    },
+    {
+        "name": "舒适天气",
+        "city": "上海",
+        "temperature": 24,
+        "wind_speed": 5,
+        "previous_temperature": None,
+        "must_include": ["舒适"],
+    },
+    {
+        "name": "降温天气",
+        "city": "北京",
+        "temperature": 15,
+        "wind_speed": 8,
+        "previous_temperature": 20,
+        "must_include": ["外套", "降温"],
+    },
+]
