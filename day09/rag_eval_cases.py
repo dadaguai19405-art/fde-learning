@@ -96,4 +96,16 @@ CASES = [
         "citation_required": True,
         "max_length": 300,
     },
+    {
+        "name": "一般高温知识与当前不热",
+        "question": "高温天气怎么补水？",
+        "context": "上海当前温度20°C，风速13.9km/h",
+        "expected_sources": ["heat"],
+        "expected_refusal": False,
+        "must_include": ["补水"],
+        "must_include_any": [],
+        "forbidden": [],
+        "citation_required": True,
+        "max_length": 300,
+    },
 ]
