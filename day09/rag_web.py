@@ -75,6 +75,15 @@ question = st.text_input(
     placeholder="例如：高温天气怎么补水？",
 )
 
+cache_key = (
+    city,
+    observed_at if latest else "",
+    question.strip(),
+)
+
+if "rag_cache" not in st.session_state:
+    st.session_state.rag_cache = {}
+
 if st.button("检索并回答", type="primary"):
     if not question.strip():
         st.warning("请先输入问题。")
@@ -93,17 +102,85 @@ if st.button("检索并回答", type="primary"):
                 with st.expander("查看错误详情"):
                     st.code(str(error))
             else:
-                st.subheader("回答")
-                st.write(result["answer"])
+                st.session_state.rag_cache[cache_key] = result
 
-                if result["sources"]:
-                    st.subheader("参考资料")
-                    for source in result["sources"]:
-                        st.markdown(f"**{source['title']}**")
-                        st.write(source["content"])
+cached_result = st.session_state.rag_cache.get(cache_key)
 
-                citations = ", ".join(result["citations"]) or "无"
-                st.caption(f"引用编号：{citations}")
+if cached_result:
+    result = cached_result
+    st.subheader("回答")
+    st.write(result["answer"])
+
+    if result["sources"]:
+        st.subheader("参考资料")
+        for source in result["sources"]:
+            st.markdown(f"**{source['title']}**")
+            st.write(source["content"])
+
+    citations = ", ".join(result["citations"]) or "无"
+    st.caption(f"引用编号：{citations}")
+
+    model_name = LLM_CONFIG["model"] if LLM_CONFIG else "抽取式回退"
+    feedback_seed = abs(hash(cache_key))
+    col1, col2 = st.columns(2)
+
+    if col1.button("👍 有帮助", key=f"up_{feedback_seed}"):
+        try:
+            query_db("""
+            INSERT INTO rag_feedback
+                (city, question, answer, citations, model, rating)
+            VALUES
+                (%s, %s, %s, %s, %s, %s)
+            """, (
+                city,
+                question.strip(),
+                result["answer"],
+                citations,
+                model_name,
+                "up",
+            ))
+            st.success("感谢反馈！")
+        except Exception as error:
+            st.warning("反馈保存失败，请先执行 feedback_setup.sql。")
+            with st.expander("查看错误详情"):
+                st.code(str(error))
+
+    if col2.button("👎 没帮助", key=f"down_{feedback_seed}"):
+        try:
+            query_db("""
+            INSERT INTO rag_feedback
+                (city, question, answer, citations, model, rating)
+            VALUES
+                (%s, %s, %s, %s, %s, %s)
+            """, (
+                city,
+                question.strip(),
+                result["answer"],
+                citations,
+                model_name,
+                "down",
+            ))
+            st.success("感谢反馈，我们会用它改进。")
+        except Exception as error:
+            st.warning("反馈保存失败，请先执行 feedback_setup.sql。")
+            with st.expander("查看错误详情"):
+                st.code(str(error))
+
+    try:
+        stats = query_db("""
+        SELECT rating, COUNT(*)
+        FROM rag_feedback
+        GROUP BY rating
+        """)
+        if stats:
+            counts = {rating: count for rating, count in stats}
+            total = sum(counts.values())
+            positive = counts.get("up", 0)
+            st.caption(
+                f"反馈统计：共 {total} 条，有帮助 {positive} 条"
+            )
+    except Exception:
+        pass
 
 st.divider()
 st.caption(
