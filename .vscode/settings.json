@@ -1,5 +1,8 @@
 {
   "python.defaultInterpreterPath": "C:/Users/Administrator/AppData/Local/Programs/Python/Python314/python.exe",
+  "python.analysis.extraPaths": [
+    "C:/Users/Administrator/Documents/Codex/2026-10-19/f/tools/python-packages/site-packages"
+  ],
   "python.terminal.activateEnvironment": false,
   "git.path": "C:/Users/Administrator/Documents/Codex/2026-10-19/f/tools/Git/cmd/git.exe",
   "files.encoding": "utf8",
